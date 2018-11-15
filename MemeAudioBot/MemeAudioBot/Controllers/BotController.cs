@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MemeAudioBot.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
@@ -13,10 +14,20 @@ namespace MemeAudioBot.Controllers
     public class BotController : Controller
     {
         private readonly IConfiguration Configuration;
+        private readonly AudioContext AudioContext;
 
-        public BotController(IConfiguration configuration)
+        public BotController(IConfiguration configuration, AudioContext audioContext)
         {
             Configuration = configuration;
+            AudioContext = audioContext;
+        }
+
+        [HttpGet]
+        public string Get()
+        {
+            var audioRequested = AudioContext.Audios.FirstOrDefault(audio => audio.Name == "lele");
+            string responseText = audioRequested?.ToString() ?? "No audio found";
+            return responseText;
         }
 
         // POST api/values
@@ -24,9 +35,11 @@ namespace MemeAudioBot.Controllers
         public string Post([FromBody]Update update)
         {
             var chat = update.Message.Chat;
-            var text = update.Message.Text + " sei tu!!!";
-            
-            Program.TelegramBotClient.SendTextMessageAsync(chat, text).Wait();
+            var audioRequestedName = update.Message.Text;
+
+            var audioRequested = AudioContext.Audios.FirstOrDefault(audio => audio.Name == audioRequestedName);
+            string responseText = audioRequested?.ToString() ?? "No audio found";
+            Program.TelegramBotClient.SendTextMessageAsync(chat, responseText).Wait();
 
             return "ok";
         }
