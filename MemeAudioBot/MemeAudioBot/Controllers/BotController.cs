@@ -6,6 +6,7 @@ using MemeAudioBot.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace MemeAudioBot.Controllers
@@ -15,11 +16,13 @@ namespace MemeAudioBot.Controllers
     {
         private readonly IConfiguration Configuration;
         private readonly AudioContext AudioContext;
+        private readonly ITelegramBotClient TelegramBotClient;
 
-        public BotController(IConfiguration configuration, AudioContext audioContext)
+        public BotController(IConfiguration configuration, AudioContext audioContext, ITelegramBotClient telegramBotClient)
         {
             Configuration = configuration;
             AudioContext = audioContext;
+            TelegramBotClient = telegramBotClient;
         }
 
         [HttpGet]
@@ -39,7 +42,7 @@ namespace MemeAudioBot.Controllers
 
             var audioRequested = AudioContext.Audios.FirstOrDefault(audio => audio.Name == audioRequestedName);
             string responseText = audioRequested?.ToString() ?? "No audio found";
-            Program.TelegramBotClient.SendTextMessageAsync(chat, responseText).Wait();
+            TelegramBotClient.SendTextMessageAsync(chat, responseText).Wait();
 
             return "ok";
         }

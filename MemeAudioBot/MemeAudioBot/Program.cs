@@ -14,8 +14,6 @@ namespace MemeAudioBot
 {
     public class Program
     {
-        public static TelegramBotClient TelegramBotClient;
-
         public static void Main(string[] args)
         {
             BuildWebHost(args).Run();
