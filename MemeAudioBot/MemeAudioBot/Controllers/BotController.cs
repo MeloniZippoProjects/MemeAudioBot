@@ -10,27 +10,13 @@ using Telegram.Bot.Types;
 namespace MemeAudioBot.Controllers
 {
     [Route("api/[controller]")]
-    public class ValuesController : Controller
+    public class BotController : Controller
     {
         private readonly IConfiguration Configuration;
 
-        public ValuesController(IConfiguration configuration)
+        public BotController(IConfiguration configuration)
         {
             Configuration = configuration;
-        }
-
-        // GET api/values
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "prova", Configuration["WEBSITE_HOSTNAME"]};
-        }
-
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
         }
 
         // POST api/values
@@ -43,18 +29,6 @@ namespace MemeAudioBot.Controllers
             Program.TelegramBotClient.SendTextMessageAsync(chat, text).Wait();
 
             return "ok";
-        }
-
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }

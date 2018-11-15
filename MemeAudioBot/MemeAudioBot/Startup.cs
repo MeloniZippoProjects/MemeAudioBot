@@ -20,7 +20,7 @@ namespace MemeAudioBot
 
             var token = Configuration["TELEGRAM_TOKEN"];
             var websiteUrl = Configuration["WEBSITE_HOSTNAME"];
-            var webhookUrl = $"https://{websiteUrl}/api/values";
+            var webhookUrl = $"https://{websiteUrl}/api/bot";
 
             Program.TelegramBotClient = new TelegramBotClient(token);
             Program.TelegramBotClient.SetWebhookAsync(webhookUrl).Wait();
