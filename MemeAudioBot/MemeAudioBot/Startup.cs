@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MemeAudioBot.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -24,6 +26,7 @@ namespace MemeAudioBot
 
             Program.TelegramBotClient = new TelegramBotClient(token);
             Program.TelegramBotClient.SetWebhookAsync(webhookUrl).Wait();
+            
         }
 
         public static IConfiguration Configuration { get; set; }
@@ -32,6 +35,10 @@ namespace MemeAudioBot
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+
+            AudioContext.ConnectionString = Configuration.GetConnectionString("AudioDatabase") ?? Configuration["AudioDatabase"];
+
+            services.AddDbContext<AudioContext>(options => options.UseSqlServer(AudioContext.ConnectionString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
