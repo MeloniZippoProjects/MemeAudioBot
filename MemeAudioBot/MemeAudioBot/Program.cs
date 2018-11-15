@@ -7,14 +7,21 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Protocols;
+using Telegram.Bot;
 
 namespace MemeAudioBot
 {
     public class Program
     {
+        public static TelegramBotClient TelegramBotClient;
+
         public static void Main(string[] args)
         {
             BuildWebHost(args).Run();
+
+            //todo: read token from secure storage
+            TelegramBotClient = new TelegramBotClient("our token");
         }
 
         public static IWebHost BuildWebHost(string[] args) =>
