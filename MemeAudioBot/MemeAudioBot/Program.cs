@@ -19,9 +19,6 @@ namespace MemeAudioBot
         public static void Main(string[] args)
         {
             BuildWebHost(args).Run();
-
-            //todo: read token from secure storage
-            TelegramBotClient = new TelegramBotClient("our token");
         }
 
         public static IWebHost BuildWebHost(string[] args) =>

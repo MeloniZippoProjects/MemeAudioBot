@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Telegram.Bot;
 
 namespace MemeAudioBot
 {
@@ -16,6 +17,13 @@ namespace MemeAudioBot
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            var token = Configuration["TELEGRAM_TOKEN"];
+            var websiteUrl = Configuration["WEBSITE_HOSTNAME"];
+            var webhookUrl = $"https://{websiteUrl}/api/values";
+
+            Program.TelegramBotClient = new TelegramBotClient(token);
+            Program.TelegramBotClient.SetWebhookAsync(webhookUrl).Wait();
         }
 
         public static IConfiguration Configuration { get; set; }
