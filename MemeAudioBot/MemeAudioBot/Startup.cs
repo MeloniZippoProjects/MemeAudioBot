@@ -31,6 +31,7 @@ namespace MemeAudioBot
 
             AudioContext.ConnectionString = Configuration.GetConnectionString("AudioDatabase") ?? Configuration["AudioDatabase"];
             services.AddDbContext<AudioContext>(options => options.UseSqlServer(AudioContext.ConnectionString));
+
             var token = Configuration["TELEGRAM_TOKEN"];
             var websiteUrl = Configuration["WEBSITE_HOSTNAME"];
             var webhookUrl = $"https://{websiteUrl}/api/bot";
@@ -39,7 +40,7 @@ namespace MemeAudioBot
             services.AddSingleton<ITelegramBotClient>(telegramBotClient);
             telegramBotClient.SetWebhookAsync(webhookUrl).Wait();
 
-            services.AddSingleton<IMemeAudioService, MemeAudioService>();
+            services.AddScoped<IMemeAudioService, MemeAudioService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

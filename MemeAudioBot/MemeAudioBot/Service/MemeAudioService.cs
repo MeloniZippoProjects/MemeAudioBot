@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using MemeAudioBot.Database;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.InlineQueryResults;
 using Telegram.Bot.Types.InputFiles;
 
 namespace MemeAudioBot.Service
@@ -28,10 +31,22 @@ namespace MemeAudioBot.Service
                 ServeInlineQuery(update);
             }
         }
-
+        
         private void ServeInlineQuery(Update update)
         {
-            
+            var inlineQuery = update.InlineQuery;
+            var audioRequested = inlineQuery.Query;
+            var audiosFound = AudioContext.Audios.Where(audio => audio.Name.Contains(audioRequested));
+
+            var queryResults = new List<InlineQueryResultVoice>();
+
+            foreach (var audio in audiosFound)
+            {
+                var voiceResult = new InlineQueryResultVoice(audio.Name, audio.Url, audio.Name);
+                queryResults.Add(voiceResult);
+            }
+
+            TelegramBotClient.AnswerInlineQueryAsync(inlineQuery.Id, queryResults);
         }
 
 
