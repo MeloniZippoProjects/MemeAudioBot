@@ -13,6 +13,7 @@ namespace MemeAudioBot.Service
     {
         private readonly ITelegramBotClient TelegramBotClient;
         private readonly AudioContext AudioContext;
+        private const int MaxResults = 20;
 
         public MemeAudioService(ITelegramBotClient telegramBotClient, AudioContext audioContext)
         {
@@ -36,8 +37,14 @@ namespace MemeAudioBot.Service
         {
             var inlineQuery = update.InlineQuery;
             var audioRequested = inlineQuery.Query;
-            var audiosFound = AudioContext.Audios.Where(audio => audio.Name.Contains(audioRequested));
 
+            if (!int.TryParse(inlineQuery.Offset, out var offset))
+            {
+                offset = 0;
+            }
+
+            var audiosFound = AudioContext.Audios.Where(audio => audio.Name.Contains(audioRequested)).Skip(offset).Take(MaxResults);
+            
             var queryResults = new List<InlineQueryResultVoice>();
 
             foreach (var audio in audiosFound)
@@ -46,7 +53,9 @@ namespace MemeAudioBot.Service
                 queryResults.Add(voiceResult);
             }
 
-            TelegramBotClient.AnswerInlineQueryAsync(inlineQuery.Id, queryResults);
+            var nextOffset = (offset + MaxResults).ToString();
+
+            TelegramBotClient.AnswerInlineQueryAsync(inlineQuery.Id, queryResults, cacheTime: 0, nextOffset: nextOffset);
         }
 
 
