@@ -14,7 +14,7 @@ namespace MemeAudioBot.Database
 
         public override string ToString()
         {
-            return $"{AudioId}: {Name}";
+            return $"{AudioId}: {Name} at {Url}";
         }
     }
 }

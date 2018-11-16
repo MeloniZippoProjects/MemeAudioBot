@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.InputFiles;
 
 namespace MemeAudioBot.Controllers
 {
@@ -40,9 +41,21 @@ namespace MemeAudioBot.Controllers
             var chat = update.Message.Chat;
             var audioRequestedName = update.Message.Text;
 
+
+
             var audioRequested = AudioContext.Audios.FirstOrDefault(audio => audio.Name == audioRequestedName);
-            string responseText = audioRequested?.ToString() ?? "No audio found";
-            TelegramBotClient.SendTextMessageAsync(chat, responseText).Wait();
+
+            if (audioRequested == null)
+            {
+                TelegramBotClient.SendTextMessageAsync(chat, "No audio found").Wait();
+            }
+            else
+            {
+                var url = audioRequested.Url;
+                
+                var voiceFile = new InputOnlineFile(url);
+                TelegramBotClient.SendVoiceAsync(chat, voiceFile, replyToMessageId: update.Message.MessageId);
+            }
 
             return "ok";
         }
