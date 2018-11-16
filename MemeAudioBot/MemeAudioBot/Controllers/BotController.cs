@@ -44,19 +44,23 @@ namespace MemeAudioBot.Controllers
             if (audioRequestedName.StartsWith("/"))
                 audioRequestedName = audioRequestedName.Substring(1);
 
-
-            var audioRequested = AudioContext.Audios.FirstOrDefault(audio => audio.Name == audioRequestedName);
-
-            if (audioRequested == null)
+            if (update.InlineQuery == null)
             {
-                TelegramBotClient.SendTextMessageAsync(chat, "No audio found").Wait();
-            }
-            else
-            {
-                var url = audioRequested.Url;
-                
-                var voiceFile = new InputOnlineFile(url);
-                TelegramBotClient.SendVoiceAsync(chat, voiceFile, replyToMessageId: update.Message.MessageId);
+
+                var audioRequested = AudioContext.Audios.FirstOrDefault(audio => audio.Name == audioRequestedName);
+
+                if (audioRequested == null)
+                {
+                    TelegramBotClient.SendTextMessageAsync(chat, "No audio found").Wait();
+                }
+                else
+                {
+                    var url = audioRequested.Url;
+
+                    var voiceFile = new InputOnlineFile(url);
+                    TelegramBotClient.SendVoiceAsync(chat, voiceFile, caption: audioRequested.Name,
+                        replyToMessageId: update.Message.MessageId);
+                }
             }
 
             return "ok";
