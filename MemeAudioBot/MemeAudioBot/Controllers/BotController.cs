@@ -41,6 +41,8 @@ namespace MemeAudioBot.Controllers
             var chat = update.Message.Chat;
             var audioRequestedName = update.Message.Text;
 
+            if (audioRequestedName.StartsWith("/"))
+                audioRequestedName = audioRequestedName.Substring(1);
 
 
             var audioRequested = AudioContext.Audios.FirstOrDefault(audio => audio.Name == audioRequestedName);
