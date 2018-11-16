@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
+using MemeAudioBot.Service;
 
 namespace MemeAudioBot
 {
@@ -37,6 +38,8 @@ namespace MemeAudioBot
             var telegramBotClient = new TelegramBotClient(token);
             services.AddSingleton<ITelegramBotClient>(telegramBotClient);
             telegramBotClient.SetWebhookAsync(webhookUrl).Wait();
+
+            services.AddSingleton<IMemeAudioService, MemeAudioService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

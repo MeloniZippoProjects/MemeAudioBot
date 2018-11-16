@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MemeAudioBot.Database;
+using MemeAudioBot.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
@@ -15,53 +16,28 @@ namespace MemeAudioBot.Controllers
     [Route("api/[controller]")]
     public class BotController : Controller
     {
-        private readonly IConfiguration Configuration;
-        private readonly AudioContext AudioContext;
-        private readonly ITelegramBotClient TelegramBotClient;
+        private readonly IMemeAudioService MemeAudioBot;
 
-        public BotController(IConfiguration configuration, AudioContext audioContext, ITelegramBotClient telegramBotClient)
+        public BotController(IMemeAudioService memeAudioBotService)
         {
-            Configuration = configuration;
-            AudioContext = audioContext;
-            TelegramBotClient = telegramBotClient;
+            MemeAudioBot = memeAudioBotService;
         }
 
         [HttpGet]
         public string Get()
         {
-            var audioRequested = AudioContext.Audios.FirstOrDefault(audio => audio.Name == "lele");
+            /*var audioRequested = AudioContext.Audios.FirstOrDefault(audio => audio.Name == "lele");
             string responseText = audioRequested?.ToString() ?? "No audio found";
-            return responseText;
+            return responseText;*/
+
+            return "ok";
         }
 
         // POST api/values
         [HttpPost]
         public string Post([FromBody]Update update)
         {
-            var chat = update.Message.Chat;
-            var audioRequestedName = update.Message.Text;
-
-            if (audioRequestedName.StartsWith("/"))
-                audioRequestedName = audioRequestedName.Substring(1);
-
-            if (update.InlineQuery == null)
-            {
-
-                var audioRequested = AudioContext.Audios.FirstOrDefault(audio => audio.Name == audioRequestedName);
-
-                if (audioRequested == null)
-                {
-                    TelegramBotClient.SendTextMessageAsync(chat, "No audio found").Wait();
-                }
-                else
-                {
-                    var url = audioRequested.Url;
-
-                    var voiceFile = new InputOnlineFile(url);
-                    TelegramBotClient.SendVoiceAsync(chat, voiceFile, caption: audioRequested.Name,
-                        replyToMessageId: update.Message.MessageId);
-                }
-            }
+            MemeAudioBot.ServeUpdate(update);
 
             return "ok";
         }
