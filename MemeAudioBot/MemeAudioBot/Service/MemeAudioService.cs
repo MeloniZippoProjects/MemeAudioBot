@@ -47,14 +47,17 @@ namespace MemeAudioBot.Service
             
             var queryResults = new List<InlineQueryResultVoice>();
 
+            //todo: can be parallelized with linq?
             foreach (var audio in audiosFound)
             {
+                //todo: change result id to audio.AudioId
                 var voiceResult = new InlineQueryResultVoice(audio.Name, audio.Url, audio.Name);
                 queryResults.Add(voiceResult);
             }
 
             var nextOffset = (offset + MaxResults).ToString();
 
+            //todo: remove cacheTime, set to default
             TelegramBotClient.AnswerInlineQueryAsync(inlineQuery.Id, queryResults, cacheTime: 0, nextOffset: nextOffset);
         }
 
