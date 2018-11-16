@@ -8,8 +8,8 @@ namespace MemeAudioBot.Service
 {
     public class MemeAudioService : IMemeAudioService
     {
-        private ITelegramBotClient TelegramBotClient;
-        private AudioContext AudioContext;
+        private readonly ITelegramBotClient TelegramBotClient;
+        private readonly AudioContext AudioContext;
 
         public MemeAudioService(ITelegramBotClient telegramBotClient, AudioContext audioContext)
         {
