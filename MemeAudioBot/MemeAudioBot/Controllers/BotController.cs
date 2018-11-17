@@ -37,8 +37,8 @@ namespace MemeAudioBot.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]Update update)
         {
-            //await MemeAudioBot.ServeUpdateAsync(update);
-            //return Ok();
+            await MemeAudioBot.ServeUpdateAsync(update);
+            return Ok();
         }
     }
 }
