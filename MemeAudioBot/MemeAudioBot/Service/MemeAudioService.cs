@@ -140,6 +140,7 @@ namespace MemeAudioBot.Service
             }
         }
 
+        private static
 
         private static readonly Random RandomImageIndexGenerator = new Random();
 
@@ -147,10 +148,17 @@ namespace MemeAudioBot.Service
         {
 
             var randomPictureUrl = BadCommandAnswers[RandomImageIndexGenerator.Next(0, BadCommandAnswers.Count)];
-
-
-            var imageFile = new InputOnlineFile(randomPictureUrl);
-            await TelegramBotClient.SendPhotoAsync(message.Chat, imageFile, "I don't know that command");
+ 
+            var reactionFile = new InputOnlineFile(randomPictureUrl);
+ 
+            if(randomPictureUrl.EndsWith("gif") or randomPictureUrl.EndsWith("mp4"))
+            {
+                await TelegramBotClient.SendDocumentAsync(message.Chat, reactionFile, "wtf is that, I don't know that command");
+            }
+            else
+            {
+                await TelegramBotClient.SendPhotoAsync(message.Chat, reactionFile, "wtf is that, I don't know that command");
+            }
         }
 
         private async Task HelpCommand(Message message)
