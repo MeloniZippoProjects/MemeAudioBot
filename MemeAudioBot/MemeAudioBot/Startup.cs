@@ -37,10 +37,10 @@ namespace MemeAudioBot
             var webhookUrl = $"https://{websiteUrl}/api/bot";
 
             var telegramBotClient = new TelegramBotClient(token);
-            services.AddSingleton<ITelegramBotClient>(telegramBotClient);
             telegramBotClient.SetWebhookAsync(webhookUrl).Wait();
-
-            services.AddScoped<IMemeAudioService, MemeAudioService>();
+            services.AddSingleton<ITelegramBotClient>(telegramBotClient);
+            
+            services.AddTransient<IMemeAudioService, MemeAudioService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
