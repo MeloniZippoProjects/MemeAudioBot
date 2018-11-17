@@ -70,8 +70,7 @@ namespace MemeAudioBot.Service
 
             if (audioRequestedName.StartsWith("/"))
                 audioRequestedName = audioRequestedName.Substring(1);
-
-
+            
             var audioRequested = AudioContext.Audios.FirstOrDefault(audio => audio.Name == audioRequestedName);
 
             if (audioRequested == null)
