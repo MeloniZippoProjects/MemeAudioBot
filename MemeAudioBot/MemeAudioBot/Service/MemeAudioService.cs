@@ -4,6 +4,7 @@ using System.Linq;
 using MemeAudioBot.Database;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InlineQueryResults;
 using Telegram.Bot.Types.InputFiles;
 
@@ -23,13 +24,14 @@ namespace MemeAudioBot.Service
 
         public void ServeUpdate(Update update)
         {
-            if (update.InlineQuery == null)
+            switch (update.Type)
             {
-                ServeMessageQuery(update);
-            }
-            else
-            {
-                ServeInlineQuery(update);
+                case UpdateType.Message:
+                    ServeMessageQuery(update);
+                    break;
+                case UpdateType.InlineQuery:
+                    ServeInlineQuery(update);
+                    break;
             }
         }
         
