@@ -158,11 +158,11 @@ namespace MemeAudioBot.Service
  
             if(randomPictureUrl.EndsWith("gif") or randomPictureUrl.EndsWith("mp4"))
             {
-                await TelegramBotClient.SendDocumentAsync(message.Chat, reactionFile, "wtf is that, I don't know that command");
+                await TelegramBotClient.SendDocumentAsync(message.Chat, reactionFile, "I don't know that command");
             }
             else
             {
-                await TelegramBotClient.SendPhotoAsync(message.Chat, reactionFile, "wtf is that, I don't know that command");
+                await TelegramBotClient.SendPhotoAsync(message.Chat, reactionFile, "I don't know that command");
             }
         }
 
