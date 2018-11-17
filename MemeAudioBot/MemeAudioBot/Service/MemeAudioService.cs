@@ -9,6 +9,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InlineQueryResults;
 using Telegram.Bot.Types.InputFiles;
+using File = System.IO.File;
 
 namespace MemeAudioBot.Service
 {
@@ -75,18 +76,41 @@ namespace MemeAudioBot.Service
             }
         }
 
+
+        private static readonly List<String> Commands = new List<string>
+        {
+            "/help",
+            "/random",
+            "/donate",
+            "/trending"
+        };
+
         private async Task ServeTextMessageAsync(Message message)
         {
-            var audioRequestedName = message.Text;
+            var command = message.Text;
 
-            if (audioRequestedName.StartsWith("/"))
-                audioRequestedName = audioRequestedName.Substring(1);
-
+            switch (command)
+            {
+                case "/help":
+                    await HelpCommand(message);
+                    break;
+                case "/random":
+                    break;
+                case "/donate":
+                    break;
+                case "/trending":
+                    break;
+                default:
+                    await DefaultCommand(message);
+                    break;
+            }
+            
+            /*
             var audioRequested = AudioContext.Audios.FirstOrDefault(audio => audio.Name == audioRequestedName);
 
             if (audioRequested == null)
             {
-                await TelegramBotClient.SendTextMessageAsync(message.Chat, "No audio found");
+                
             }
             else
             {
@@ -96,6 +120,54 @@ namespace MemeAudioBot.Service
                 await TelegramBotClient.SendVoiceAsync(message.Chat, voiceFile, caption: audioRequested.Name,
                     replyToMessageId: message.MessageId);
             }
+            */
+        }
+
+
+
+
+        private static List<String> _badCommandAnswers = null;
+
+        private static List<String> BadCommandAnswers
+        {
+            get
+            {
+                if (_badCommandAnswers == null)
+                {
+                    _badCommandAnswers = File.ReadLines("./BadCommandAnswers.txt").ToList();
+                }
+                return _badCommandAnswers;
+            }
+        }
+
+
+        private static readonly Random RandomImageIndexGenerator = new Random();
+
+        private async Task DefaultCommand(Message message)
+        {
+
+            var randomPictureUrl = BadCommandAnswers[RandomImageIndexGenerator.Next(0, BadCommandAnswers.Count)];
+
+
+            var imageFile = new InputOnlineFile(randomPictureUrl);
+            await TelegramBotClient.SendPhotoAsync(message.Chat, imageFile, "I don't know that command");
+        }
+
+        private async Task HelpCommand(Message message)
+        {
+            var helpText = string.Join(
+                Environment.NewLine,
+                "Hi, I am Meme Audio Bot, the dankest bot of them all.",
+                "",
+                "I can provide you with audios from famous vines or memes to send them to your friends!",
+                "",
+                "I am an inline bot, so you can just ask for audiomemes by writing in your text chat \"@memeaudio_bot <meme>\" and replacing <meme> with the meme of your choice.",
+                "",
+                "You can also add me to groups, and use the command /random to send random audios to the group."
+            );
+
+            await TelegramBotClient.SendTextMessageAsync(message.Chat, helpText);
         }
     }
+
 }
