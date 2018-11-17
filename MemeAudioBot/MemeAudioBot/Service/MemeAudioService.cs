@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using MemeAudioBot.Database;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -22,20 +23,22 @@ namespace MemeAudioBot.Service
             AudioContext = audioContext;
         }
 
-        public void ServeUpdate(Update update)
+        public async Task ServeUpdateAsync(Update update)
         {
             switch (update.Type)
             {
                 case UpdateType.Message:
-                    ServeMessageQuery(update);
+                    await ServeMessageQuery(update);
                     break;
                 case UpdateType.InlineQuery:
-                    ServeInlineQuery(update);
+                    await ServeInlineQuery(update);
+                    break;
+                default:
                     break;
             }
         }
-        
-        private void ServeInlineQuery(Update update)
+
+        private async Task ServeInlineQuery(Update update)
         {
             var inlineQuery = update.InlineQuery;
             var audioRequested = inlineQuery.Query;
@@ -60,11 +63,11 @@ namespace MemeAudioBot.Service
             var nextOffset = (offset + MaxResults).ToString();
 
             //todo: remove cacheTime, set to default
-            TelegramBotClient.AnswerInlineQueryAsync(inlineQuery.Id, queryResults, cacheTime: 0, nextOffset: nextOffset);
+            await TelegramBotClient.AnswerInlineQueryAsync(inlineQuery.Id, queryResults, cacheTime: 0, nextOffset: nextOffset);
         }
 
 
-        private void ServeMessageQuery(Update update)
+        private async Task ServeMessageQuery(Update update)
         {
             var chat = update.Message.Chat;
             var audioRequestedName = update.Message.Text;
@@ -77,14 +80,14 @@ namespace MemeAudioBot.Service
 
             if (audioRequested == null)
             {
-                TelegramBotClient.SendTextMessageAsync(chat, "No audio found").Wait();
+                await TelegramBotClient.SendTextMessageAsync(chat, "No audio found");
             }
             else
             {
                 var url = audioRequested.Url;
 
                 var voiceFile = new InputOnlineFile(url);
-                TelegramBotClient.SendVoiceAsync(chat, voiceFile, caption: audioRequested.Name,
+                await TelegramBotClient.SendVoiceAsync(chat, voiceFile, caption: audioRequested.Name,
                     replyToMessageId: update.Message.MessageId);
             }
         }

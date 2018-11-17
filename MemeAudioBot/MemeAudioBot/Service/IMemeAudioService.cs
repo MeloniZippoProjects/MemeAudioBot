@@ -8,7 +8,7 @@ namespace MemeAudioBot.Service
 {
     public interface IMemeAudioService
     {
-        void ServeUpdate(Update update);
+        Task ServeUpdateAsync(Update update);
     }
 
 }
