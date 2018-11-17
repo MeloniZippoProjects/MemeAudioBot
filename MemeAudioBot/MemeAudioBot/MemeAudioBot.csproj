@@ -16,6 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="BadCommandAnswers.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="BadCommandAnswers.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
