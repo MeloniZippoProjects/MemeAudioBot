@@ -69,26 +69,36 @@ namespace MemeAudioBot.Service
 
         private async Task ServeMessageQuery(Update update)
         {
-            var chat = update.Message.Chat;
-            var audioRequestedName = update.Message.Text;
+            var message = update.Message;
+
+            switch (message.Type)
+            {
+                case MessageType.Text:
+                    await ServeTextMessageAsync(message);
+                    break;
+            }
+        }
+
+        private async Task ServeTextMessageAsync(Message message)
+        {
+            var audioRequestedName = message.Text;
 
             if (audioRequestedName.StartsWith("/"))
                 audioRequestedName = audioRequestedName.Substring(1);
-
 
             var audioRequested = AudioContext.Audios.FirstOrDefault(audio => audio.Name == audioRequestedName);
 
             if (audioRequested == null)
             {
-                await TelegramBotClient.SendTextMessageAsync(chat, "No audio found");
+                await TelegramBotClient.SendTextMessageAsync(message.Chat, "No audio found");
             }
             else
             {
                 var url = audioRequested.Url;
 
                 var voiceFile = new InputOnlineFile(url);
-                await TelegramBotClient.SendVoiceAsync(chat, voiceFile, caption: audioRequested.Name,
-                    replyToMessageId: update.Message.MessageId);
+                await TelegramBotClient.SendVoiceAsync(message.Chat, voiceFile, caption: audioRequested.Name,
+                    replyToMessageId: message.MessageId);
             }
         }
     }
