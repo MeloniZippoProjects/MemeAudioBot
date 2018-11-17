@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MemeAudioBot.Database;
+using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -48,17 +49,12 @@ namespace MemeAudioBot.Service
                 offset = 0;
             }
 
-            var audiosFound = AudioContext.Audios.Where(audio => audio.Name.Contains(audioRequested)).Skip(offset).Take(MaxResults);
-            
-            var queryResults = new List<InlineQueryResultVoice>();
-
-            //todo: can be parallelized with linq?
-            foreach (var audio in audiosFound)
-            {
-                //todo: change result id to audio.AudioId
-                var voiceResult = new InlineQueryResultVoice(audio.Name, audio.Url, audio.Name);
-                queryResults.Add(voiceResult);
-            }
+            var queryResults = await AudioContext.Audios
+                .Where(audio => audio.Name.Contains(audioRequested))
+                .Skip(offset)
+                .Take(MaxResults)
+                .Select(audio => new InlineQueryResultVoice(audio.Name, audio.Url, audio.Name)) //todo: change result id to audio.AudioId
+                .ToListAsync();
 
             var nextOffset = (offset + MaxResults).ToString();
 
