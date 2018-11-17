@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MemeAudioBot.Database;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -54,13 +57,16 @@ namespace MemeAudioBot.Service
                 .Where(audio => audio.Name.Contains(audioRequested))
                 .Skip(offset)
                 .Take(MaxResults)
-                .Select(audio => new InlineQueryResultVoice(audio.Name, audio.Url, audio.Name)) //todo: change result id to audio.AudioId
+                .Select(audio =>
+                    new InlineQueryResultVoice(audio.Name, audio.Url,
+                        audio.Name)) //todo: change result id to audio.AudioId
                 .ToListAsync();
 
             var nextOffset = (offset + MaxResults).ToString();
 
             //todo: remove cacheTime, set to default
-            await TelegramBotClient.AnswerInlineQueryAsync(inlineQuery.Id, queryResults, cacheTime: 0, nextOffset: nextOffset);
+            await TelegramBotClient.AnswerInlineQueryAsync(inlineQuery.Id, queryResults, cacheTime: 0,
+                nextOffset: nextOffset);
         }
 
 
@@ -95,8 +101,10 @@ namespace MemeAudioBot.Service
                     await HelpCommand(message);
                     break;
                 case "/random":
+                    await RandomCommand(message);
                     break;
                 case "/donate":
+                    await DonateCommand(message);
                     break;
                 case "/trending":
                     break;
@@ -104,27 +112,7 @@ namespace MemeAudioBot.Service
                     await DefaultCommand(message);
                     break;
             }
-            
-            /*
-            var audioRequested = AudioContext.Audios.FirstOrDefault(audio => audio.Name == audioRequestedName);
-
-            if (audioRequested == null)
-            {
-                
-            }
-            else
-            {
-                var url = audioRequested.Url;
-
-                var voiceFile = new InputOnlineFile(url);
-                await TelegramBotClient.SendVoiceAsync(message.Chat, voiceFile, caption: audioRequested.Name,
-                    replyToMessageId: message.MessageId);
-            }
-            */
         }
-
-
-
 
         private static List<String> _badCommandAnswers = null;
 
@@ -132,17 +120,34 @@ namespace MemeAudioBot.Service
         {
             get
             {
-                if (_badCommandAnswers == null)
+                if (_badCommandAnswers == null || true)
                 {
-                    _badCommandAnswers = File.ReadLines("./BadCommandAnswers.txt").ToList();
+                    try
+                    {
+                        using (var fileReader = File.OpenText("./BadCommandAnswers.json"))
+                        {
+                            using (var jsonReader = new JsonTextReader(fileReader))
+                            {
+                                var badCommandAnswersJson = (JObject) JToken.ReadFrom(jsonReader);
+                                _badCommandAnswers = badCommandAnswersJson["reactions"]
+                                    .Select(jtoken => jtoken["url"].ToString())
+                                    .ToList();
+                            }
+                        }
+                    }
+                    catch (JsonException)
+                    { 
+                        _badCommandAnswers = File.ReadLines("./BadCommandAnswers.txt").ToList();
+                    }
                 }
+
                 return _badCommandAnswers;
             }
         }
 
         private static
 
-        private static readonly Random RandomImageIndexGenerator = new Random();
+        private static readonly Random RandomGenerator = new Random();
 
         private async Task DefaultCommand(Message message)
         {
@@ -176,6 +181,20 @@ namespace MemeAudioBot.Service
 
             await TelegramBotClient.SendTextMessageAsync(message.Chat, helpText);
         }
-    }
 
+        private async Task RandomCommand(Message message)
+        {
+            var randomAudioIndex = RandomGenerator.Next(0, AudioContext.Audios.Count());
+            var randomAudio = AudioContext.Audios.Single(audio => audio.AudioId == randomAudioIndex);
+
+            var voiceFile = new InputOnlineFile(randomAudio.Url);
+            await TelegramBotClient.SendVoiceAsync(message.Chat, voiceFile, caption: randomAudio.Name,
+                replyToMessageId: message.MessageId);
+        }
+
+        private async Task DonateCommand(Message message)
+        {
+            await TelegramBotClient.SendTextMessageAsync(message.Chat, "WIP: donations not yet supported");
+        }
+    }
 }
