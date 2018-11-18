@@ -145,18 +145,16 @@ namespace MemeAudioBot.Service
             }
         }
 
-        private static
-
         private static readonly Random RandomGenerator = new Random();
 
         private async Task DefaultCommand(Message message)
         {
 
-            var randomPictureUrl = BadCommandAnswers[RandomImageIndexGenerator.Next(0, BadCommandAnswers.Count)];
+            var randomPictureUrl = BadCommandAnswers[RandomGenerator.Next(0, BadCommandAnswers.Count)];
  
             var reactionFile = new InputOnlineFile(randomPictureUrl);
  
-            if(randomPictureUrl.EndsWith("gif") or randomPictureUrl.EndsWith("mp4"))
+            if(randomPictureUrl.EndsWith("gif") || randomPictureUrl.EndsWith("mp4"))
             {
                 await TelegramBotClient.SendDocumentAsync(message.Chat, reactionFile, "I don't know that command");
             }
