@@ -120,7 +120,7 @@ namespace MemeAudioBot.Service
         {
             get
             {
-                if (_badCommandAnswers == null || true)
+                if (_badCommandAnswers == null)
                 {
                     try
                     {
