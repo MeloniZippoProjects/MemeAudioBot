@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MemeAudioBot.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Telegram.Bot;
@@ -30,16 +31,23 @@ namespace MemeAudioBot.Service
 
         public async Task ServeUpdateAsync(Update update)
         {
-            switch (update.Type)
+            try
             {
-                case UpdateType.Message:
-                    await ServeMessageQuery(update);
-                    break;
-                case UpdateType.InlineQuery:
-                    await ServeInlineQuery(update);
-                    break;
-                default:
-                    break;
+                switch (update.Type)
+                {
+                    case UpdateType.Message:
+                        await ServeMessageQuery(update);
+                        break;
+                    case UpdateType.InlineQuery:
+                        await ServeInlineQuery(update);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                await SendErrorMessage(update.Message);
             }
         }
 
@@ -93,8 +101,8 @@ namespace MemeAudioBot.Service
 
         private async Task ServeTextMessageAsync(Message message)
         {
-            var command = message.Text;
-
+            var command = message.Text.Split(" ").FirstOrDefault();
+           
             switch (command)
             {
                 case "/help":
@@ -195,7 +203,21 @@ namespace MemeAudioBot.Service
 
         private async Task SuggestCommand(Message message)
         {
-            await SendWipMessage(message, "suggestions");
+            var messageText = message.Text;
+            var suggestion = messageText.Substring(messageText.IndexOf(" ", StringComparison.Ordinal));
+
+            var feedback = new Feedback
+            {
+                FromUser = message.From.Id,
+                Text = suggestion,
+                MessageJson = JsonConvert.SerializeObject(message)
+            };
+
+            _memeDbContext.Feedbacks.Add(feedback);
+            await _memeDbContext.SaveChangesAsync();
+
+            await TelegramBotClient.SendTextMessageAsync(message.Chat, $"Thank you {message.From.Username}! Your feedback has been saved!");
+
         }
 
         private async Task DonateCommand(Message message)
@@ -212,5 +234,12 @@ namespace MemeAudioBot.Service
         {
             await TelegramBotClient.SendTextMessageAsync(message.Chat, $"WIP: {feature} not yet supported");
         }
+
+
+        private async Task SendErrorMessage(Message message)
+        {
+            await TelegramBotClient.SendTextMessageAsync(message.Chat, "I'm sowwy, an error occurred :((");
+        }
+
     }
 }

@@ -7,8 +7,9 @@ namespace MemeAudioBot.Database
 {
     public class Feedback
     {
-        public int FeedbackId;
-        public string Text;
-        public string MessageJson;
+        public int FeedbackId { get; set; }
+        public string Text { get; set; }
+        public string MessageJson { get; set; }
+        public int FromUser { get; set; }
     }
 }
