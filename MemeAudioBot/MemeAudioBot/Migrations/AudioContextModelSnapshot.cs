@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MemeAudioBot.Migrations
 {
-    [DbContext(typeof(AudioContext))]
+    [DbContext(typeof(MemeDbContext))]
     partial class AudioContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

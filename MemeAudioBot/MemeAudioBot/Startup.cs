@@ -29,8 +29,8 @@ namespace MemeAudioBot
         {
             services.AddMvc();
 
-            AudioContext.ConnectionString = Configuration.GetConnectionString("AudioDatabase") ?? Configuration["AudioDatabase"];
-            services.AddDbContext<AudioContext>(options => options.UseSqlServer(AudioContext.ConnectionString));
+            MemeDbContext.ConnectionString = Configuration.GetConnectionString("AudioDatabase") ?? Configuration["AudioDatabase"];
+            services.AddDbContext<MemeDbContext>(options => options.UseSqlServer(MemeDbContext.ConnectionString));
 
             var token = Configuration["TELEGRAM_TOKEN"];
             var websiteUrl = Configuration["WEBSITE_HOSTNAME"];

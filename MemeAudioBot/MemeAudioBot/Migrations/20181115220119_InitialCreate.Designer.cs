@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MemeAudioBot.Migrations
 {
-    [DbContext(typeof(AudioContext))]
+    [DbContext(typeof(MemeDbContext))]
     [Migration("20181115220119_InitialCreate")]
     partial class InitialCreate
     {

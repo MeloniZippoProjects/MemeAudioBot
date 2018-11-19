@@ -8,12 +8,13 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace MemeAudioBot.Database
 {
-    public class AudioContext : DbContext
+    public class MemeDbContext : DbContext
     {
         public static string ConnectionString;
-        public AudioContext(DbContextOptions<AudioContext> options) : base(options)
+        public MemeDbContext(DbContextOptions<MemeDbContext> options) : base(options)
         { }
 
         public DbSet<Audio> Audios { get; set; }
+        public DbSet<Feedback> Feedbacks { get; set; }
     }
 }

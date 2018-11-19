@@ -19,13 +19,13 @@ namespace MemeAudioBot.Service
     public class MemeAudioService : IMemeAudioService
     {
         private readonly ITelegramBotClient TelegramBotClient;
-        private readonly AudioContext AudioContext;
+        private readonly MemeDbContext _memeDbContext;
         private const int MaxResults = 20;
 
-        public MemeAudioService(ITelegramBotClient telegramBotClient, AudioContext audioContext)
+        public MemeAudioService(ITelegramBotClient telegramBotClient, MemeDbContext memeDbContext)
         {
             TelegramBotClient = telegramBotClient;
-            AudioContext = audioContext;
+            _memeDbContext = memeDbContext;
         }
 
         public async Task ServeUpdateAsync(Update update)
@@ -53,7 +53,7 @@ namespace MemeAudioBot.Service
                 offset = 0;
             }
 
-            var queryResults = await AudioContext.Audios
+            var queryResults = await _memeDbContext.Audios
                 .Where(audio => audio.Name.Contains(audioRequested))
                 .Skip(offset)
                 .Take(MaxResults)
@@ -149,7 +149,6 @@ namespace MemeAudioBot.Service
 
         private async Task DefaultCommand(Message message)
         {
-
             var randomPictureUrl = BadCommandAnswers[RandomGenerator.Next(0, BadCommandAnswers.Count)];
  
             var reactionFile = new InputOnlineFile(randomPictureUrl);
@@ -182,8 +181,8 @@ namespace MemeAudioBot.Service
 
         private async Task RandomCommand(Message message)
         {
-            var randomAudioIndex = RandomGenerator.Next(0, AudioContext.Audios.Count());
-            var randomAudio = AudioContext.Audios.Single(audio => audio.AudioId == randomAudioIndex);
+            var randomAudioIndex = RandomGenerator.Next(0, _memeDbContext.Audios.Count());
+            var randomAudio = _memeDbContext.Audios.Single(audio => audio.AudioId == randomAudioIndex);
 
             var voiceFile = new InputOnlineFile(randomAudio.Url);
             await TelegramBotClient.SendVoiceAsync(message.Chat, voiceFile, caption: randomAudio.Name,
