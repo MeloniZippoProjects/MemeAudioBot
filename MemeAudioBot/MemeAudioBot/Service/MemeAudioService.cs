@@ -107,6 +107,10 @@ namespace MemeAudioBot.Service
                     await DonateCommand(message);
                     break;
                 case "/trending":
+                    await TrendingCommand(message);
+                    break;
+                case "/suggest":
+                    await SuggestCommand(message);
                     break;
                 default:
                     await DefaultCommand(message);
@@ -189,9 +193,24 @@ namespace MemeAudioBot.Service
                 replyToMessageId: message.MessageId);
         }
 
+        private async Task SuggestCommand(Message message)
+        {
+            await SendWipMessage(message, "suggestions");
+        }
+
         private async Task DonateCommand(Message message)
         {
-            await TelegramBotClient.SendTextMessageAsync(message.Chat, "WIP: donations not yet supported");
+            await SendWipMessage(message, "donations");
+        }
+
+        private async Task TrendingCommand(Message message)
+        {
+            await SendWipMessage(message, "trending audios");
+        }
+
+        private async Task SendWipMessage(Message message, string feature)
+        {
+            await TelegramBotClient.SendTextMessageAsync(message.Chat, $"WIP: {feature} not yet supported");
         }
     }
 }
