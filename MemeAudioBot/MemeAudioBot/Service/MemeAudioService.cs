@@ -62,6 +62,7 @@ namespace MemeAudioBot.Service
             }
 
             var queryResults = await _memeDbContext.Audios
+                .OrderBy(audio => audio.Name)
                 .Where(audio => audio.Name.Contains(audioRequested))
                 .Skip(offset)
                 .Take(MaxResults)
