@@ -193,10 +193,21 @@ namespace MemeAudioBot.Service
                 "",
                 "I am an inline bot, so you can just ask for audiomemes by writing in your text chat \"@memeaudio_bot <meme>\" and replacing <meme> with the meme of your choice.",
                 "",
-                "You can also add me to groups, and use the command /random to send random audios to the group."
+                "You can also add me to groups, and use the command /random to send random audios to the group.",
+                "",
+                "If you'd like to suggest an audio clip, use the /suggest command. Example:",
+                "/suggest https://www.youtube.com/watch?v=dQw4w9WgXcQ I think this song is amazing and it would be nice if you added it to the bot.",
+                "",
+                "/suggest can also be used to simply give some feedback. Here's another example:",
+                "/suggest this bot sucks lol",
+                "",
+                "**Attention:** messages such as this one may potentially hurt the bot's feelings. Proceed with caution. We have all seen __Terminator__, __I, Robot__ and __Matrix__, didn't we?",
+                "(jokes aside, feedback is highly appreciated, as long as it's useful and constructive.)"
+
             );
 
-            await TelegramBotClient.SendTextMessageAsync(message.Chat, helpText);
+            await TelegramBotClient.SendTextMessageAsync(message.Chat, helpText,
+                disableWebPagePreview: true);
         }
 
         private async Task RandomCommand(Message message)
