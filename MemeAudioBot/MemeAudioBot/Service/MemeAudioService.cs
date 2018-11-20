@@ -201,7 +201,7 @@ namespace MemeAudioBot.Service
                 "/suggest can also be used to simply give some feedback. Here's another example:",
                 "/suggest this bot sucks lol",
                 "",
-                "**Attention:** messages such as this one may potentially hurt the bot's feelings. Proceed with caution. We have all seen __Terminator__, __I, Robot__ and __Matrix__, didn't we?",
+                "**Attention:** messages such as this one may potentially hurt the bot's feelings. Proceed with caution. We have all seen __Terminator__, __I, Robot__ and __Matrix__, haven't we?",
                 "(jokes aside, feedback is highly appreciated, as long as it's useful and constructive.)"
 
             );
