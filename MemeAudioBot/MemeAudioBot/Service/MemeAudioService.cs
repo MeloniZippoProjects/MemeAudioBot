@@ -104,6 +104,9 @@ namespace MemeAudioBot.Service
         {
             var command = message.Text.Split(" ").FirstOrDefault();
            
+            if(command == null || !command.StartsWith("/"))
+                return;
+
             switch (command)
             {
                 case "/start":
