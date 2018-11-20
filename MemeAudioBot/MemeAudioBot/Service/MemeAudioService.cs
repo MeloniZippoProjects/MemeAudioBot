@@ -67,8 +67,8 @@ namespace MemeAudioBot.Service
                 .Skip(offset)
                 .Take(MaxResults)
                 .Select(audio =>
-                    new InlineQueryResultVoice(audio.Name, audio.Url,
-                        audio.Name)) //todo: change result id to audio.AudioId
+                    new InlineQueryResultVoice(audio.AudioId.ToString(), audio.Url,
+                        audio.Name)) 
                 .ToListAsync();
 
             var nextOffset = (offset + MaxResults).ToString();
