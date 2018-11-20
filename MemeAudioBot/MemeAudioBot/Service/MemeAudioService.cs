@@ -93,6 +93,7 @@ namespace MemeAudioBot.Service
 
         private static readonly List<String> Commands = new List<string>
         {
+            "/start",
             "/help",
             "/random",
             "/donate",
@@ -105,6 +106,9 @@ namespace MemeAudioBot.Service
            
             switch (command)
             {
+                case "/start":
+                    await HelpCommand(message);
+                    break;
                 case "/help":
                     await HelpCommand(message);
                     break;
