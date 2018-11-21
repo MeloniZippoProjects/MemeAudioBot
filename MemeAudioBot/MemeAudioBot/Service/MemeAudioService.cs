@@ -192,7 +192,7 @@ namespace MemeAudioBot.Service
                 "",
                 "I can provide you with audios from famous vines or memes to send them to your friends!",
                 "",
-                "I am an inline bot, so you can just ask for audiomemes by writing in your text chat \"@memeaudio_bot <meme>\" and replacing <meme> with the meme of your choice.",
+                "I am an inline bot, so you can just ask for audiomemes by writing in your text chat \"@memeaudio_bot {meme}\" and replacing {meme} with the meme of your choice.",
                 "",
                 "You can also add me to groups, and use the command /random to send random audios to the group.",
                 "",
@@ -202,14 +202,15 @@ namespace MemeAudioBot.Service
                 "/suggest can also be used to simply give some feedback. Here's another example:",
                 "/suggest this bot sucks lol",
                 "",
-                "**Attention:** messages such as this one may potentially hurt the bot's feelings. Proceed with caution. We have all seen __Terminator__, __I, Robot__ and __Matrix__, haven't we?",
+                "<b>Attention:</b> messages such as this one may potentially hurt the bot's feelings. Proceed with caution. We have all seen <i>Terminator</i>, <i>I, Robot</i> and <i>Matrix</i>, haven't we?",
                 "(jokes aside, feedback is highly appreciated, as long as it's useful and constructive.)"
 
             );
 
             await TelegramBotClient.SendTextMessageAsync(
-                message.Chat,
-                helpText,
+                chatId: message.Chat,
+                text: helpText,
+                parseMode: ParseMode.Html,
                 disableWebPagePreview: true);
         }
 
