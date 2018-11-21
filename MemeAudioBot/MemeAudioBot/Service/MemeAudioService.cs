@@ -103,9 +103,9 @@ namespace MemeAudioBot.Service
 
         private async Task ServeTextMessageAsync(Message message)
         {
-            var command = message.Text.Split(" ").FirstOrDefault();
-           
-            if(command == null || !command.StartsWith("/"))
+            string command = message.Text.Split(" ", 2).FirstOrDefault();
+
+            if (command == null || !command.StartsWith("/"))
                 return;
 
             switch (command)
@@ -185,6 +185,7 @@ namespace MemeAudioBot.Service
 
         private async Task HelpCommand(Message message)
         {
+            //todo: should definitely use resources for this
             var helpText = string.Join(
                 Environment.NewLine,
                 "Hi, I am Meme Audio Bot, the dankest bot of them all.",
@@ -206,7 +207,9 @@ namespace MemeAudioBot.Service
 
             );
 
-            await TelegramBotClient.SendTextMessageAsync(message.Chat, helpText,
+            await TelegramBotClient.SendTextMessageAsync(
+                message.Chat,
+                helpText,
                 disableWebPagePreview: true);
         }
 
@@ -216,27 +219,39 @@ namespace MemeAudioBot.Service
             var randomAudio = _memeDbContext.Audios.Single(audio => audio.AudioId == randomAudioIndex);
 
             var voiceFile = new InputOnlineFile(randomAudio.Url);
-            await TelegramBotClient.SendVoiceAsync(message.Chat, voiceFile, caption: randomAudio.Name,
+            await TelegramBotClient.SendVoiceAsync(
+                message.Chat,
+                voiceFile,
+                caption: randomAudio.Name,
                 replyToMessageId: message.MessageId);
         }
 
         private async Task SuggestCommand(Message message)
         {
-            var messageText = message.Text;
-            var suggestion = messageText.Substring(messageText.IndexOf(" ", StringComparison.Ordinal));
+            string suggestion = message.Text.Split(" ", 2).Skip(1).SingleOrDefault();
 
-            var feedback = new Feedback
+            if (string.IsNullOrEmpty(suggestion))
             {
-                FromUser = message.From.Id,
-                Text = suggestion,
-                MessageJson = JsonConvert.SerializeObject(message)
-            };
+                await TelegramBotClient.SendTextMessageAsync(
+                    message.Chat, 
+                    $"You're not suggesting anything \uD83E\uDD14");
+            }
+            else
+            {
+                var feedback = new Feedback
+                {
+                    FromUser = message.From.Id,
+                    Text = suggestion,
+                    MessageJson = JsonConvert.SerializeObject(message)
+                };
 
-            _memeDbContext.Feedbacks.Add(feedback);
-            await _memeDbContext.SaveChangesAsync();
+                _memeDbContext.Feedbacks.Add(feedback);
+                await _memeDbContext.SaveChangesAsync();
 
-            await TelegramBotClient.SendTextMessageAsync(message.Chat, $"Thank you {message.From.Username}! Your feedback has been saved!");
-
+                await TelegramBotClient.SendTextMessageAsync(
+                    message.Chat,
+                    $"Thank you {message.From.Username}! Your feedback has been saved!");
+            }
         }
 
         private async Task DonateCommand(Message message)
