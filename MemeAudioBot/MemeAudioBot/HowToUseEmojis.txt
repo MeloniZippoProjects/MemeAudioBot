@@ -1,0 +1,6 @@
+﻿Step 1: locate the unicode number of the emoji from http://www.unicode.org/emoji/charts/full-emoji-list.html
+	Example: thinking is 1F914
+Step 2: C# code is UTF-16, so no 5-digits characters. They can split however in two 4-digits characters. Find the split via http://www.russellcottrell.com/greek/utilities/SurrogatePairCalculator.htm
+	Example: 1F914 can be written as D83E + DD14
+Step 3: write them in code next to each other using the \uXXXX escape sequence
+	Example: "This is an emoji: \uD83E\uDD14"
